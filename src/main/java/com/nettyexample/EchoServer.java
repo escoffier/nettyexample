@@ -38,7 +38,14 @@ public class EchoServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(new UserDecoder());
+                            ch.pipeline().addLast(new UserEncoder());
+                            ch.pipeline().addLast(new EchoServerPreHandler());
                             ch.pipeline().addLast(handler);
+
+                            //ch.pipeline().addLast(new EchoOutHandler());
+
+
 
                         }
                     });

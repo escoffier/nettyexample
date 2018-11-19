@@ -31,6 +31,9 @@ public class EchoClient {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+
+                            ch.pipeline().addLast(new UserEncoder());
+                            ch.pipeline().addLast(new UserDecoder());
                             ch.pipeline().addLast(new EchoClientHandler());
                         }
                     });
@@ -44,7 +47,11 @@ public class EchoClient {
     }
 
     public static void main(String[] args) throws Exception{
-        new EchoClient("127.0.0.1", 19999).start();
+        EchoClient client = new EchoClient("127.0.0.1", 19999);
+
+        for (int i = 0; i < 10; i++){
+            client.start();
+        }
     }
 
 }
