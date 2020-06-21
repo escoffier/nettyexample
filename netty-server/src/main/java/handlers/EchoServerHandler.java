@@ -1,36 +1,33 @@
-package com.nettyexample;
+package handlers;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
-
-import java.nio.ByteBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import util.User;
 
 @ChannelHandler.Sharable
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(EchoServerHandler.class);
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         //super.channelRead(ctx, msg);
 //        ByteBuf buffer = (ByteBuf) msg;
-//        System.out.println("received msg: "+ buffer.toString(CharsetUtil.UTF_8)
-//                + "   ---current thread: " + Thread.currentThread().getName());
-//        ctx.pipeline().write(buffer);
+        logger.info("received msg: " + msg.toString());
+        User user = (User) msg;
+        user.setDescription("from server");
 
-                System.out.println("received msg: "+ msg.toString()
-                + "   ---current thread: " + Thread.currentThread().getName());
-
-                ctx.pipeline().write(msg);
+        ctx.pipeline().write(user);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        logger.info("channelReadComplete: " + ctx.pipeline().channel().toString());
         //super.channelReadComplete(ctx);
-        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)
-                .addListener(ChannelFutureListener.CLOSE);
+//        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)
+//                .addListener(ChannelFutureListener.CLOSE);
     }
 
     @Override

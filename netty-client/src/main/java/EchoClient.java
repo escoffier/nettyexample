@@ -1,7 +1,6 @@
-package com.nettyexample;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -28,15 +27,8 @@ public class EchoClient {
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
                     .remoteAddress(new InetSocketAddress(host, port))
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-
-                            ch.pipeline().addLast(new UserEncoder());
-                            ch.pipeline().addLast(new UserDecoder());
-                            ch.pipeline().addLast(new EchoClientHandler());
-                        }
-                    });
+                    .handler(new PBChannelInitializer());
+//                    .handler(new PBChannelInitializer());
 
             ChannelFuture future = bootstrap.connect().sync();
 
@@ -47,9 +39,9 @@ public class EchoClient {
     }
 
     public static void main(String[] args) throws Exception{
-        EchoClient client = new EchoClient("127.0.0.1", 19999);
+        EchoClient client = new EchoClient("192.168.1.209", 19999);
 
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 1; i++){
             client.start();
         }
     }

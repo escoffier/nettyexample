@@ -1,10 +1,19 @@
-package com.nettyexample;
+package util;
 
 import java.io.Serializable;
 
 public class User implements Serializable {
     private String userName;
     private String password;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getUserName() {
         return userName;
@@ -24,6 +33,6 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "USer: {" + userName + " , " + password + "}";
+        return "USer: {" + userName + " , " + password + ", " + description +"}";
     }
 }
