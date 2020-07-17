@@ -9,6 +9,12 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import proto.message.CheckHealth;
 
 public class PBChannelInitializer extends ChannelInitializer<SocketChannel> {
+    private ConsoleClient client;
+
+    public PBChannelInitializer(ConsoleClient client) {
+        this.client = client;
+    }
+
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -20,7 +26,7 @@ public class PBChannelInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
         pipeline.addLast(new ProtobufEncoder());
 
-        pipeline.addLast(new PBClientHandler());
+        pipeline.addLast(new PBClientHandler(client));
 
         pipeline.addLast(new ExceptionHandler());
 

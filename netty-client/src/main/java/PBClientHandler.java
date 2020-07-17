@@ -1,12 +1,22 @@
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.EventLoop;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import proto.message.CheckHealth;
 
+import java.util.concurrent.TimeUnit;
+
 public class PBClientHandler extends ChannelInboundHandlerAdapter {
-    Logger logger = LoggerFactory.getLogger(PBClientHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(PBClientHandler.class);
+    private ConsoleClient client;
+
+    public PBClientHandler(ConsoleClient client) {
+        this.client = client;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -31,5 +41,11 @@ public class PBClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
+        final EventLoop eventLoop = ctx.channel().eventLoop();
+        eventLoop.schedule( () -> {
+            ChannelFuture newFuture = client.createBootstrap(new Bootstrap(), eventLoop);
+            client.setFuture(newFuture);
+
+        }, 1L, TimeUnit.SECONDS);
     }
 }

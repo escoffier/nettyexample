@@ -32,13 +32,19 @@ public class ConsoleClient {
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .remoteAddress(new InetSocketAddress(host, port))
-                .handler(new PBChannelInitializer());
+                .handler(new PBChannelInitializer(this));
 
         future = bootstrap.connect().addListener(new GenericFutureListener<ChannelFuture>() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (!future.isSuccess()) {
                     logger.info("connect failed " + future.cause().toString());
+                    final EventLoop eventLoop = future.channel().eventLoop();
+                    eventLoop.schedule(() -> {
+                        ChannelFuture newFuture = createBootstrap(new Bootstrap(), eventLoop);
+                        ConsoleClient.this.setFuture(newFuture);
+
+                    }, 5L, TimeUnit.SECONDS);
                 } else {
                     logger.info("connect to " + future.channel().remoteAddress());
                 }
@@ -54,7 +60,7 @@ public class ConsoleClient {
     public void start1() {
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
-        ChannelFuture future = createBootstrap(bootstrap, group);
+        future = createBootstrap(bootstrap, group);
 
         ChannelFuture lastWriteFuture = null;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -87,16 +93,9 @@ public class ConsoleClient {
                 lastWriteFuture.addListener(new GenericFutureListener<ChannelFuture>() {
                     @Override
                     public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                        if(!channelFuture.isSuccess()){
+                        if (!channelFuture.isSuccess()) {
                             logger.error("write failure: {}", channelFuture.cause().getMessage());
                             channelFuture.cause().printStackTrace(System.err);
-
-                            final EventLoop eventLoop = channelFuture.channel().eventLoop();
-                            eventLoop.schedule( () -> {
-                                ChannelFuture newFuture = createBootstrap(new Bootstrap(), eventLoop);
-                                ConsoleClient.this.setFuture(newFuture);
-
-                            }, 1L, TimeUnit.SECONDS);
                         }
                     }
                 });
@@ -112,12 +111,12 @@ public class ConsoleClient {
     public void start() throws Exception {
 
         EventLoopGroup group = new NioEventLoopGroup();
-        try{
+        try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group)
                     .channel(NioSocketChannel.class)
                     .remoteAddress(new InetSocketAddress(host, port))
-                    .handler(new PBChannelInitializer());
+                    .handler(new PBChannelInitializer(this));
 
             ChannelFuture future = bootstrap.connect().sync().addListener(new GenericFutureListener<ChannelFuture>() {
                 @Override
@@ -151,22 +150,21 @@ public class ConsoleClient {
                 }
 
                 for (int i = 0; i < cnt; i++) {
-                    CheckHealth.HealthCheckRequest request= CheckHealth.HealthCheckRequest.newBuilder().setService("test-service-" + i).build();
+                    CheckHealth.HealthCheckRequest request = CheckHealth.HealthCheckRequest.newBuilder().setService("test-service-" + i).build();
                     lastWriteFuture = future.channel().writeAndFlush(request);
                     lastWriteFuture.addListener(new GenericFutureListener<ChannelFuture>() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
-                            if(!future.isSuccess()){
+                            if (!future.isSuccess()) {
                                 logger.error("write failure: {}", future.cause().getMessage());
                                 future.cause().printStackTrace(System.err);
                             }
-
                         }
                     });
                 }
             }
 
-            if(lastWriteFuture != null) {
+            if (lastWriteFuture != null) {
                 lastWriteFuture.sync();
             }
 //            future.channel().closeFuture().sync();
@@ -181,6 +179,6 @@ public class ConsoleClient {
 
     public static void main(String[] args) throws Exception {
         ConsoleClient client = new ConsoleClient("192.168.1.209", 19999);
-        client.start();
+        client.start1();
     }
 }

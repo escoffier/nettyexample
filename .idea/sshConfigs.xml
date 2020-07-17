@@ -6,6 +6,12 @@
       <sshConfig authType="PASSWORD" host="192.168.254.131" id="c2d92b11-c5a7-4051-8613-922b7b876f73" port="22" customName="131" nameFormat="CUSTOM" />
       <sshConfig authType="PASSWORD" host="192.168.254.131" id="1d91caa6-3130-45eb-b111-a84d5e847ce0" port="22" customName="131" nameFormat="CUSTOM" />
       <sshConfig authType="PASSWORD" host="192.168.254.131" id="25a66c29-289b-4104-b5af-294d9a2ccd80" port="22" customName="131" nameFormat="CUSTOM" />
+      <sshConfig authType="PASSWORD" host="192.168.254.131" id="966174d5-0e68-4a82-95ac-750181859602" port="22" customName="131" nameFormat="CUSTOM" />
+      <sshConfig authType="PASSWORD" host="192.168.254.131" id="6b4db75a-dfa0-456f-8c5d-e98d4dfe0f9d" port="22" customName="131" nameFormat="CUSTOM" />
+      <sshConfig authType="PASSWORD" host="192.168.254.131" id="088578b8-73b9-4c74-87e8-aff9ea544a06" port="22" customName="131" nameFormat="CUSTOM" />
+      <sshConfig authType="PASSWORD" host="192.168.254.131" id="92137192-df01-4fee-8a55-a56a2e63f173" port="22" customName="131" nameFormat="CUSTOM" />
+      <sshConfig authType="PASSWORD" host="192.168.254.131" id="af9ab7d7-b70c-4374-95a4-b840f0ebaf14" port="22" customName="131" nameFormat="CUSTOM" />
+      <sshConfig authType="PASSWORD" host="192.168.254.131" id="5c13827c-b61d-4757-922f-18b5b34eb487" port="22" customName="131" nameFormat="CUSTOM" />
     </configs>
   </component>
 </project>
